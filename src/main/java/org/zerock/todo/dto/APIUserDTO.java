@@ -8,13 +8,15 @@ import org.springframework.security.core.userdetails.User;
 
 import java.util.Collection;
 
-@Getter
-@Setter
-@ToString
+@Getter @Setter @ToString
 public class APIUserDTO extends User {
     private String mid;
     private String mpw;
-    public APIUserDTO(String username, String password, Collection<GrantedAuthority> authorities) {
+    public APIUserDTO(
+            String username,
+            String password,
+            Collection<GrantedAuthority> authorities
+    ) {
         super(username, password, authorities);
         this.mid = username;
         this.mpw = password;

@@ -10,8 +10,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor  @NoArgsConstructor
 public class TodoDTO {
     private Long tno;
     private String title;
