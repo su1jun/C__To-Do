@@ -36,7 +36,7 @@ public class TokenCheckFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         // 경로 체크 부분
         String path = request.getRequestURI();
-        if (!path.startsWith("/api/")) {
+        if (!path.startsWith("/todo/")) {
             filterChain.doFilter(request, response);
             return;
         }

@@ -9,9 +9,7 @@ import java.time.LocalDate;
 @Builder @Getter
 @ToString
 public class Todo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long tno;
     private String title;
     private LocalDate dueDate;

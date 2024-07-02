@@ -14,9 +14,9 @@ import org.zerock.todo.repository.APIUserRepository;
 import java.util.List;
 import java.util.Optional;
 
-@Service
 @Log4j2
 @RequiredArgsConstructor
+@Service
 public class APIUserDetailsService implements UserDetailsService {
     //주입
     private final APIUserRepository apiUserRepository;
@@ -25,11 +25,13 @@ public class APIUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(
             String username
     ) throws UsernameNotFoundException {
+        log.info("APIUserDetailsService apiUser-------------------------------------");
+
         Optional<APIUser> result = apiUserRepository.findById(username);
 
-        APIUser apiUser = result.orElseThrow(() -> new UsernameNotFoundException("Cannot find mid"));
-
-        log.info("APIUserDetailsService apiUser-------------------------------------");
+        APIUser apiUser = result.orElseThrow(
+                () -> new UsernameNotFoundException("Cannot find mid")
+        );
 
         APIUserDTO dto =  new APIUserDTO(
                 apiUser.getMid(),

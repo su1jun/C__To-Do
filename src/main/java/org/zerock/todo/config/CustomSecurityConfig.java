@@ -42,12 +42,14 @@ public class CustomSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
+    @Bean // security 적용 제외
     public WebSecurityCustomizer webSecurityCustomizer() {
         log.info("------------web configure-------------------");
         return (web) -> web.ignoring()
-                .requestMatchers(
-                        PathRequest.toStaticResources().atCommonLocations());
+                .requestMatchers(PathRequest
+                                .toStaticResources()
+                                .atCommonLocations()
+                );
     }
 
     @Bean

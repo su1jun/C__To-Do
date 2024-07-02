@@ -9,8 +9,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sample")
+@RequestMapping("/t/sample")
 public class SampleController {
+
     @GetMapping("/doA")
     @PreAuthorize("hasRole('ROLE_USER')")
     public List<String> doA() {

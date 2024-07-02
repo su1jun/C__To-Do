@@ -12,9 +12,9 @@ import org.zerock.todo.service.TodoService;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/todo")
 @Log4j2
 @RequiredArgsConstructor
+@RequestMapping("/todo")
 public class TodoController {
 
     private final TodoService todoService;

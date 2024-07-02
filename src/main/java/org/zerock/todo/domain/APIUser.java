@@ -11,7 +11,6 @@ import javax.persistence.Table;
 @AllArgsConstructor @NoArgsConstructor
 @ToString
 public class APIUser {
-
     @Id
     private String mid;
     private String mpw;
