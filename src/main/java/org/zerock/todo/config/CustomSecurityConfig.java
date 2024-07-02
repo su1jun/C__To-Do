@@ -27,24 +27,23 @@ import org.zerock.todo.security.handler.APILoginSuccessHandler;
 import org.zerock.todo.util.JWTUtil;
 
 import java.util.Arrays;
-@Configuration
 @Log4j2
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
+@EnableWebSecurity @EnableGlobalMethodSecurity(prePostEnabled = true)
+@Configuration
 public class CustomSecurityConfig {
-    //주입
+    
     private final APIUserDetailsService apiUserDetailsService;
     private final JWTUtil jwtUtil;
 
-    @Bean
+    @Bean // 패스워드 암호화
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean // security 적용 제외
+    @Bean // 정적 자원 요청에 대한 보안 무시
     public WebSecurityCustomizer webSecurityCustomizer() {
-        log.info("------------web configure-------------------");
+        log.info("----------config.CustomSecurityConfig.webSecurityCustomizer(정적 요청 관련)");
         return (web) -> web.ignoring()
                 .requestMatchers(PathRequest
                                 .toStaticResources()
@@ -52,54 +51,55 @@ public class CustomSecurityConfig {
                 );
     }
 
-    @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
-        log.info("------------configure-------------------");
+    @Bean // http 보안 구성
+    public SecurityFilterChain filterChain(
+            final HttpSecurity http
+    ) throws Exception {
+        log.info("----------config.CustomSecurityConfig.filterChain(http 보안)");
 
-        //AuthenticationManager설정
+        // AuthenticationManager 사용자 인증 설정
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(apiUserDetailsService).passwordEncoder(passwordEncoder());
 
-        // Get AuthenticationManager
+        // AuthenticationManager 생성
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
 
-        //반드시 필요
+        // http 보안 구성에 AuthenticationManager 등록
         http.authenticationManager(authenticationManager);
 
-        //APILoginFilter
+        // APILoginFilter 설정
         APILoginFilter apiLoginFilter = new APILoginFilter("/generateToken");
         apiLoginFilter.setAuthenticationManager(authenticationManager);
 
-        //APILoginSuccessHandler
+        // APILoginSuccessHandler 설정
         APILoginSuccessHandler successHandler = new APILoginSuccessHandler(jwtUtil);
-
-        //SuccessHandler 세팅
         apiLoginFilter.setAuthenticationSuccessHandler(successHandler);
 
-        //APILoginFilter의 위치 조정
+        // http 요청 -> 전처리 작업
+        //// security 필터에 커스텀 필터 추가, token 생성
         http.addFilterBefore(apiLoginFilter, UsernamePasswordAuthenticationFilter.class);
-
-        //api로 시작하는 모든 경로는 TokenCheckFilter 동작
+        //// api로 시작하는 모든 경로는 TokenCheckFilter 동작
         http.addFilterBefore(
                 tokenCheckFilter(jwtUtil, apiUserDetailsService),
                 UsernamePasswordAuthenticationFilter.class
         );
+        //// refreshToken 호출 처리
+        http.addFilterBefore(
+                new RefreshTokenFilter("/refreshToken", jwtUtil),
+                TokenCheckFilter.class
+        );
 
-        //refreshToken 호출 처리
-        http.addFilterBefore(new RefreshTokenFilter("/refreshToken", jwtUtil),
-                TokenCheckFilter.class);
-
-        http.csrf().disable();
+        http.csrf().disable(); // csrf 방지 (csrf 토큰 미포함)
+        // 세션 관리, 모든 세션 비활성화
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
+        // cors 설정
         http.cors(httpSecurityCorsConfigurer -> {
             httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource());
         });
 
         return http.build();
-
     }
-    @Bean
+    @Bean // CORS 설정
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
@@ -110,7 +110,10 @@ public class CustomSecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-    private TokenCheckFilter tokenCheckFilter(JWTUtil jwtUtil, APIUserDetailsService apiUserDetailsService){
+    private TokenCheckFilter tokenCheckFilter(
+            JWTUtil jwtUtil,
+            APIUserDetailsService apiUserDetailsService
+    ){
         return new TokenCheckFilter(apiUserDetailsService, jwtUtil);
     }
 }

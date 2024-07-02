@@ -28,7 +28,7 @@ public class APILoginFilter extends AbstractAuthenticationProcessingFilter {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws AuthenticationException, IOException, ServletException {
-        log.info("APILoginFilter-----------------------------------");
+        log.info("----------security.filter.APILoginFilter.attemptAuthentication(사용자 요청 필터)");
     
         // GET => Null
         if(request.getMethod().equalsIgnoreCase("GET")){

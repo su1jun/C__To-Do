@@ -26,7 +26,7 @@ public class APILoginSuccessHandler implements AuthenticationSuccessHandler {
             HttpServletResponse response,
             Authentication authentication
     ) throws IOException, ServletException {
-        log.info("Login Success Handler......................");
+        log.info("----------security.handler.APILoginSuccessHandler.onAuthenticationSuccess(로그인 성공 처리)");
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 

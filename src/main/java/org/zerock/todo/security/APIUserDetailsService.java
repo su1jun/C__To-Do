@@ -20,12 +20,11 @@ import java.util.Optional;
 public class APIUserDetailsService implements UserDetailsService {
     //주입
     private final APIUserRepository apiUserRepository;
-
     @Override
     public UserDetails loadUserByUsername(
             String username
     ) throws UsernameNotFoundException {
-        log.info("APIUserDetailsService apiUser-------------------------------------");
+        log.info("----------security.APIUserDetailsService.loadUserByUsername(사용자 정보 로드)");
 
         Optional<APIUser> result = apiUserRepository.findById(username);
 

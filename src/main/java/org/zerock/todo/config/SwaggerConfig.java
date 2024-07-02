@@ -15,7 +15,7 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 
 import java.util.List;
-@Configuration
+@Configuration // openapi 문서화 클래스 사용
 public class SwaggerConfig {
     @Bean
     public Docket api() {
@@ -30,21 +30,21 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo());
     }
 
-    private ApiInfo apiInfo() {
+    private ApiInfo apiInfo() { // api 문서 설정
         return new ApiInfoBuilder()
                 .title("Boot API 01 Project Swagger")
                 .build();
     }
 
-    private ApiKey apiKey() {
+    private ApiKey apiKey() { // 보안 인증 키 정의
         return new ApiKey("Authorization", "Bearer Token", "header");
     }
-    private SecurityContext securityContext() {
+    private SecurityContext securityContext() { // 보안 url 지정
         return SecurityContext.builder().securityReferences(defaultAuth())
-                .operationSelector(selector -> selector.requestMappingPattern().startsWith("/api/")).build();
+                .operationSelector(selector -> selector.requestMappingPattern().startsWith("/todo/")).build();
     }
-
-    private List<SecurityReference> defaultAuth() {
+    
+    private List<SecurityReference> defaultAuth() { // 보안키 참고
         AuthorizationScope authorizationScope = new AuthorizationScope("global", "global access");
         return List.of(new SecurityReference("Authorization", new AuthorizationScope[] {authorizationScope}));
     }
